@@ -1,3 +1,13 @@
 body {
     padding: 10px;
 }
+
+.listing-img-container {
+    max-height: 300px;
+    overflow: hidden;
+}
+
+.listing-img {
+    height: auto;
+    max-width: 100%;
+}

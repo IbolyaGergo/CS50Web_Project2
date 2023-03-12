@@ -9,7 +9,10 @@ from .forms import *
 
 
 def index(request):
-    return render(request, "auctions/index.html")
+    listings = ListingModel.objects.all()
+    return render(request, "auctions/index.html", {
+        "listings": listings
+    })
 
 
 def login_view(request):
@@ -73,15 +76,30 @@ def create(request):
             description = form.cleaned_data.get("description")
             img = form.cleaned_data.get("img")
             start_bid = form.cleaned_data.get("start_bid")
-            obj = ListingModel.objects.create(
-                title = title,
-                description = description,
-                img = img,
-                start_bid = start_bid
-            )
+            if img:
+                obj = ListingModel.objects.create(
+                    title=title,
+                    description=description,
+                    img=img,
+                    start_bid=start_bid
+                )
+            else:
+                obj = ListingModel.objects.create(
+                    title=title,
+                    description=description,
+                    start_bid=start_bid
+                )
             obj.save()
+            print(obj)
             return HttpResponseRedirect(reverse("index"))
+    print("form not valid")
     form = ListingForm()
     return render(request, "auctions/create.html", {
         "form": form
+    })
+
+def listing(request, listing_id):
+    listing = ListingModel.objects.get(pk=listing_id)
+    return render(request, "auctions/listing.html", {
+        "listing": listing
     })
