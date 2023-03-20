@@ -7,6 +7,7 @@ class User(AbstractUser):
     pass
 
 class ListingModel(models.Model):
+    # creator = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=64)
     description = models.TextField()
     img = models.ImageField(upload_to="images/", null=True, blank=True)
@@ -16,4 +17,11 @@ class ListingModel(models.Model):
 
     def __str__(self):
         return f"{self.title}, starting bid:${self.start_bid}"
-    
+
+class BidModel(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user")
+    listing = models.ForeignKey(ListingModel, on_delete=models.CASCADE, related_name="listing")
+    bid = models.DecimalField(max_digits=64, decimal_places=2)
+
+    def __str__(self):
+        return f"${self.bid}"

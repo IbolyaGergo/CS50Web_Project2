@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, ListingModel
+from .models import User, ListingModel, BidModel
 from .forms import *
 
 
@@ -90,16 +90,56 @@ def create(request):
                     start_bid=start_bid
                 )
             obj.save()
-            print(obj)
             return HttpResponseRedirect(reverse("index"))
-    print("form not valid")
     form = ListingForm()
     return render(request, "auctions/create.html", {
         "form": form
     })
 
 def listing(request, listing_id):
+
+    if request.method == "POST":
+        form = BidForm(request.POST, request.FILES)
+        if form.is_valid():
+            user = request.user
+            listing = ListingModel.objects.get(pk=listing_id)
+            bid = form.cleaned_data.get("bid")
+            if  bid < listing.start_bid:
+                return render(request, "auctions/listing.html", {
+                    "listing": listing,
+                    "form": form,
+                    "message": "Small bid."
+                })
+            else:
+                obj = BidModel.objects.create(
+                    user=user,
+                    listing=listing,
+                    bid=bid
+                )
+                obj.save()
+                form = BidForm()
+                return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+                # return HttpResponseRedirect(reverse('create_rating', args=(video_id,)))
+
     listing = ListingModel.objects.get(pk=listing_id)
+
+    if BidModel.objects.filter(listing__id=listing_id):
+        num_of_bids = BidModel.objects.filter(listing__id=listing_id).count()
+        bidder = BidModel.objects.filter(listing__id=listing_id).last().user
+    else:
+        num_of_bids = 0
+
+    if num_of_bids > 0:
+        curr_bid = BidModel.objects.filter(listing__id=listing_id).last()
+    else:
+        curr_bid = ListingModel.objects.get(pk=listing_id).start_bid
+    # print(BidModel.objects.filter(listing__id=listing_id).count())
+    form = BidForm()
+
     return render(request, "auctions/listing.html", {
-        "listing": listing
+        "listing": listing,
+        "form": form,
+        "curr_bid": curr_bid,
+        "num_of_bids": num_of_bids,
+        "bidder": bidder
     })

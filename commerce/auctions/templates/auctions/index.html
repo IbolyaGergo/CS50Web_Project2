@@ -3,21 +3,23 @@
 {% block body %}
     <h2>Active Listings</h2>
     {% for listing in listings %}
-    <div class="card mb-3">
-        <div class="row no-gutters">
-            {% if listing.img %}
-            <div class="col-md-4">
-                <img src="{{ listing.img.url }}" alt="{{ listing.title }}" class="card-img" style="height: 300px; object-fit: scale-down;">
-            </div>
-            {% endif %}
-            <div class="col-md-8">
-                <div class="card-body">
-                    <h5 class="card-title">{{ listing.title }}</h5>
-                    <p class="card-text">{{ listing.description }}</p>
-                    <p class="card-text">Created at: {{ listing.created_at|date:"F j, Y, g:i a" }}</p>
+    <a href="{% url 'listing' listing.id %}">
+        <div class="card mb-3">
+            <div class="row no-gutters">
+                {% if listing.img %}
+                <div class="col-md-4">
+                    <img src="{{ listing.img.url }}" alt="{{ listing.title }}" class="card-img" style="height: 300px; object-fit: scale-down;">
+                </div>
+                {% endif %}
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ listing.title }}</h5>
+                        <p class="card-text">{{ listing.description }}</p>
+                        <p class="card-text">Created at: {{ listing.created_at|date:"F j, Y, g:i a" }}</p>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </a>
     {% endfor %}
 {% endblock %}
