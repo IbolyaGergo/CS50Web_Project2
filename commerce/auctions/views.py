@@ -66,6 +66,7 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
+
 # Create a new listing
 def create(request):
 
@@ -95,6 +96,7 @@ def create(request):
     return render(request, "auctions/create.html", {
         "form": form
     })
+
 
 def listing(request, listing_id):
 
@@ -136,10 +138,26 @@ def listing(request, listing_id):
     # print(BidModel.objects.filter(listing__id=listing_id).count())
     form = BidForm()
 
-    return render(request, "auctions/listing.html", {
-        "listing": listing,
-        "form": form,
-        "curr_bid": curr_bid,
-        "num_of_bids": num_of_bids,
-        "bidder": bidder
-    })
+    if num_of_bids > 0:
+        return render(request, "auctions/listing.html", {
+            "listing": listing,
+            "form": form,
+            "curr_bid": curr_bid,
+            "num_of_bids": num_of_bids,
+            "bidder": bidder
+        })
+    else:
+        return render(request, "auctions/listing.html", {
+            "listing": listing,
+            "form": form,
+            "curr_bid": curr_bid,
+            "num_of_bids": num_of_bids
+        })
+
+
+def watch(request, listing_id):
+    if request.method == "POST":
+        listing = ListingModel.objects.get(pk=listing_id)
+        user = request.user
+        user.watchlist.add(listing)
+        return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
