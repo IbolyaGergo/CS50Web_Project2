@@ -3,13 +3,17 @@
 {% block body %}
     <h2>Listing: {{ listing.title }}</h2><br>
     {% if user.is_authenticated %}
-        Add to watchlist.
-        <div>
-            <form action="{% url 'watch' listing.id %}" method="post">
-                {% csrf_token %}
-                <input type="submit" value="Watchlist">
-            </form>
-        </div>
+        {% if on_watchlist %}
+            Remove from watchlist.
+        {% else %}
+            Add to watchlist.
+            <div>
+                <form action="{% url 'watch' listing.id %}" method="post">
+                    {% csrf_token %}
+                    <input type="submit" value="Watchlist">
+                </form>
+            </div>
+        {% endif %}
     {% endif %}
     {% if listing.img %}
         <img src="{{ listing.img.url }}" alt="{{ listing.title }}" class="card-img" style="height: 300px; object-fit: scale-down;">
@@ -18,7 +22,7 @@
     <h2>{{ curr_bid }}</h2>
     {% if user.is_authenticated %}
         <div>
-            {% if bidder %}
+            {% if num_of_bids > 0 %}
                 {{ num_of_bids }} bid(s) so far for this item.
                 {% if bidder == user %}
                     Your bid is the current bid.
@@ -26,7 +30,7 @@
                     {{ bidder.username }}`s bid is the current bid.
                 {% endif %}
             {% else %}
-                {{ num_of_bids }} bid(s) so far for this item.
+                No bids so far for this item.
             {% endif %}
             <form action="{% url 'listing' listing.id %}" method="post">
                 {% csrf_token %}

@@ -10,9 +10,17 @@ from .forms import *
 
 def index(request):
     listings = ListingModel.objects.all()
-    return render(request, "auctions/index.html", {
-        "listings": listings
-    })
+    if request.user.is_authenticated:
+        num_on_watchlist = request.user.watchlist.count()
+        # print(request.user.watchlist.all())
+        return render(request, "auctions/index.html", {
+            "listings": listings,
+            "num_on_watchlist": num_on_watchlist
+        })
+    else:
+        return render(request, "auctions/index.html", {
+            "listings": listings
+        })
 
 
 def login_view(request):
@@ -135,8 +143,12 @@ def listing(request, listing_id):
         curr_bid = BidModel.objects.filter(listing__id=listing_id).last()
     else:
         curr_bid = ListingModel.objects.get(pk=listing_id).start_bid
-    # print(BidModel.objects.filter(listing__id=listing_id).count())
     form = BidForm()
+
+    if listing in request.user.watchlist.all():
+        on_watchlist = True
+    else:
+        on_watchlist = False
 
     if num_of_bids > 0:
         return render(request, "auctions/listing.html", {
@@ -144,14 +156,16 @@ def listing(request, listing_id):
             "form": form,
             "curr_bid": curr_bid,
             "num_of_bids": num_of_bids,
-            "bidder": bidder
+            "bidder": bidder,
+            "on_watchlist": on_watchlist
         })
     else:
         return render(request, "auctions/listing.html", {
             "listing": listing,
             "form": form,
             "curr_bid": curr_bid,
-            "num_of_bids": num_of_bids
+            "num_of_bids": num_of_bids,
+            "on_watchlist": on_watchlist
         })
 
 
