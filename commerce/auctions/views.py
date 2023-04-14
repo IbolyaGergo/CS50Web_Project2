@@ -149,6 +149,8 @@ def listing(request, listing_id):
     else:
         on_watchlist = False
 
+    num_on_watchlist = request.user.watchlist.count()
+
     if num_of_bids > 0:
         return render(request, "auctions/listing.html", {
             "listing": listing,
@@ -156,7 +158,8 @@ def listing(request, listing_id):
             "curr_bid": curr_bid,
             "num_of_bids": num_of_bids,
             "bidder": bidder,
-            "on_watchlist": on_watchlist
+            "on_watchlist": on_watchlist,
+            "num_on_watchlist": num_on_watchlist
         })
     else:
         return render(request, "auctions/listing.html", {
@@ -164,7 +167,8 @@ def listing(request, listing_id):
             "form": form,
             "curr_bid": curr_bid,
             "num_of_bids": num_of_bids,
-            "on_watchlist": on_watchlist
+            "on_watchlist": on_watchlist,
+            "num_on_watchlist": num_on_watchlist
         })
 
 
@@ -182,3 +186,12 @@ def unwatch(request, listing_id):
         user = request.user
         user.watchlist.remove(listing)
         return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+
+def watchlist(request):
+    if request.user.is_authenticated:
+        watchlist = request.user.watchlist.all()
+        num_on_watchlist = request.user.watchlist.count()
+        return render(request, "auctions/watchlist.html", {
+            "watchlist": watchlist,
+            "num_on_watchlist": num_on_watchlist
+        })
