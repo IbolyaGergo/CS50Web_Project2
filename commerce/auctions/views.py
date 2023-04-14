@@ -12,7 +12,6 @@ def index(request):
     listings = ListingModel.objects.all()
     if request.user.is_authenticated:
         num_on_watchlist = request.user.watchlist.count()
-        # print(request.user.watchlist.all())
         return render(request, "auctions/index.html", {
             "listings": listings,
             "num_on_watchlist": num_on_watchlist
@@ -174,4 +173,12 @@ def watch(request, listing_id):
         listing = ListingModel.objects.get(pk=listing_id)
         user = request.user
         user.watchlist.add(listing)
+        return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+    
+
+def unwatch(request, listing_id):
+    if request.method == "POST":
+        listing = ListingModel.objects.get(pk=listing_id)
+        user = request.user
+        user.watchlist.remove(listing)
         return HttpResponseRedirect(reverse("listing", args=(listing_id,)))

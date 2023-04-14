@@ -5,6 +5,12 @@
     {% if user.is_authenticated %}
         {% if on_watchlist %}
             Remove from watchlist.
+            <div>
+                <form action="{% url 'unwatch' listing.id %}" method="post">
+                    {% csrf_token %}
+                    <input type="submit" value="Remove">
+                </form>
+            </div>
         {% else %}
             Add to watchlist.
             <div>
