@@ -3,7 +3,7 @@
 {% block body %}
     <h2>Active Listings</h2>
     {% for listing in listings %}
-    <a href="{% url 'listing' listing.id %}">
+    
         <div class="card mb-3">
             <div class="row no-gutters">
                 {% if listing.img %}
@@ -13,13 +13,12 @@
                 {% endif %}
                 <div class="col-md-8">
                     <div class="card-body">
-                        <h5 class="card-title">{{ listing.title }}</h5>
+                        <h5 class="card-title"><a href="{% url 'listing' listing.id %}">{{ listing.title }}</a></h5>
                         <p class="card-text">{{ listing.description }}</p>
                         <p class="card-text">Created at: {{ listing.created_at|date:"F j, Y, g:i a" }}</p>
                     </div>
                 </div>
             </div>
         </div>
-    </a>
     {% endfor %}
 {% endblock %}

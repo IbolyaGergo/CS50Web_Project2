@@ -76,16 +76,26 @@ def register(request):
 
 # Create a new listing
 def create(request):
+    
+    categories = [
+        "Home",
+        "Electronics", 
+        "Toys", 
+        "Clothing",
+        "Sport"
+    ]
 
     if request.method == "POST":
         form = ListingForm(request.POST, request.FILES)
         if form.is_valid():
+            creator = request.user
             title = form.cleaned_data.get("title")
             description = form.cleaned_data.get("description")
             img = form.cleaned_data.get("img")
             start_bid = form.cleaned_data.get("start_bid")
             if img:
                 obj = ListingModel.objects.create(
+                    creator=creator,
                     title=title,
                     description=description,
                     img=img,
@@ -93,6 +103,7 @@ def create(request):
                 )
             else:
                 obj = ListingModel.objects.create(
+                    creator=creator,
                     title=title,
                     description=description,
                     start_bid=start_bid
@@ -101,10 +112,11 @@ def create(request):
             return HttpResponseRedirect(reverse("index"))
     form = ListingForm()
     return render(request, "auctions/create.html", {
-        "form": form
+        "form": form,
+        "categories": categories
     })
 
-
+# Listing page
 def listing(request, listing_id):
 
     if request.method == "POST":
@@ -185,7 +197,7 @@ def unwatch(request, listing_id):
         listing = ListingModel.objects.get(pk=listing_id)
         user = request.user
         user.watchlist.remove(listing)
-        return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+        return HttpResponseRedirect(reverse("watchlist"))
 
 def watchlist(request):
     if request.user.is_authenticated:
