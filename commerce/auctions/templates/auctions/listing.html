@@ -3,8 +3,18 @@
 {% block body %}
     <h2>Listing: {{ listing.title }}</h2><br>
     {% if user.is_authenticated %}
+        {% if user == listing.creator %}
+            <div>
+                <form action="{% url 'close' listing.id %}" method="post">
+                    {% csrf_token %}
+                    <input type="submit" value="Close">
+                </form>
+            </div>
+        {% endif %}
+        {% if not listing.active and user.id == listing.winner %}
+            You won the item.
+        {% endif %}
         {% if on_watchlist %}
-            Remove from watchlist.
             <div>
                 <form action="{% url 'unwatch' listing.id %}" method="post">
                     {% csrf_token %}
@@ -12,7 +22,6 @@
                 </form>
             </div>
         {% else %}
-            Add to watchlist.
             <div>
                 <form action="{% url 'watch' listing.id %}" method="post">
                     {% csrf_token %}

@@ -11,6 +11,8 @@ class ListingModel(models.Model):
     start_bid = models.DecimalField(max_digits=64, decimal_places=2)
     created_at = models.DateTimeField(default=timezone.now)
     category = models.CharField(max_length=64)
+    active = models.BooleanField(default=True)
+    winner = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.title}, starting bid:${self.start_bid}"

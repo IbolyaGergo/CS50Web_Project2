@@ -140,7 +140,6 @@ def listing(request, listing_id):
                 obj.save()
                 form = BidForm()
                 return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
-                # return HttpResponseRedirect(reverse('create_rating', args=(video_id,)))
 
     listing = ListingModel.objects.get(pk=listing_id)
 
@@ -207,3 +206,13 @@ def watchlist(request):
             "watchlist": watchlist,
             "num_on_watchlist": num_on_watchlist
         })
+    
+def close(request, listing_id):
+    listing = ListingModel.objects.get(pk=listing_id)
+    if request.method == "POST":
+        listing.active = False
+        print(listing.active)
+        listing.winner = BidModel.objects.filter(listing__id=listing_id).last().user.id
+        listing.save()
+        return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+    

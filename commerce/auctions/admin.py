@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import User, ListingModel, BidModel
 
 class ListingModelAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'img', 'start_bid', 'creator', 'created_at')
+    list_display = ('id', 'title', 'img', 'start_bid', 'creator', 'created_at', 'active')
 
 class UserAdmin(admin.ModelAdmin):
     list_display = ('id', 'username')
