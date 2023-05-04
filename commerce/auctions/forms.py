@@ -2,7 +2,7 @@ from django import forms
 
 class ListingForm(forms.Form):
     title = forms.CharField(max_length=64, widget=forms.TextInput)
-    description = forms.CharField(widget=forms.Textarea)
+    description = forms.CharField(widget=forms.Textarea(attrs={'rows': 5, 'cols': 40}))
     img = forms.ImageField()
     start_bid = forms.DecimalField(max_digits=10, decimal_places=2)
 

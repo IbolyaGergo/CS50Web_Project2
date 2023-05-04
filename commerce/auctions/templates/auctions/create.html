@@ -7,7 +7,7 @@
             {{ form }}
             <select name="category">
                 {% for category in categories %}
-                <option value="{{ category }}">{{ category }}</option>
+                <option value="{{ category }}">{{ category.name }}</option>
                 {% endfor %}
             </select>
             <input type="submit" value="Submit">

@@ -10,7 +10,7 @@ class ListingModel(models.Model):
     img = models.ImageField(upload_to="images/", null=True, blank=True)
     start_bid = models.DecimalField(max_digits=64, decimal_places=2)
     created_at = models.DateTimeField(default=timezone.now)
-    category = models.CharField(max_length=64)
+    # category = models.CharField(max_length=64)
     active = models.BooleanField(default=True)
     winner = models.IntegerField(default=0)
 
@@ -28,3 +28,10 @@ class BidModel(models.Model):
 
     def __str__(self):
         return f"${self.bid}"
+
+class CategoryModel(models.Model):
+    name = models.CharField(max_length=64)
+    listing = models.ManyToManyField(ListingModel, blank=True, related_name="category")
+
+    def __str__(self):
+        return f"{self.name}"

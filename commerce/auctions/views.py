@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, ListingModel, BidModel
+from .models import User, ListingModel, BidModel, CategoryModel
 from .forms import *
 
 
@@ -76,15 +76,7 @@ def register(request):
 
 # Create a new listing
 def create(request):
-    
-    categories = [
-        "Home",
-        "Electronics", 
-        "Toys", 
-        "Clothing",
-        "Sport"
-    ]
-
+    categories = CategoryModel.objects.all()
     if request.method == "POST":
         form = ListingForm(request.POST, request.FILES)
         if form.is_valid():
@@ -216,3 +208,21 @@ def close(request, listing_id):
         listing.save()
         return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
     
+def categories(request):
+    categories = CategoryModel.objects.all()
+    return render(request, "auctions/categories.html", {
+            "categories": categories
+        })
+    
+def category(request, category_name):
+    listings = ListingModel.objects.filter(category__name=category_name).all()
+    if request.user.is_authenticated:
+        num_on_watchlist = request.user.watchlist.count()
+        return render(request, "auctions/index.html", {
+            "listings": listings,
+            "num_on_watchlist": num_on_watchlist
+        })
+    else:
+        return render(request, "auctions/index.html", {
+            "listings": listings
+        })
