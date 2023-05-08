@@ -115,11 +115,12 @@ def create(request):
 # Listing page
 def listing(request, listing_id):
 
+    listing = ListingModel.objects.get(pk=listing_id)
+
     if request.method == "POST":
         form = BidForm(request.POST, request.FILES)
         if form.is_valid():
             user = request.user
-            listing = ListingModel.objects.get(pk=listing_id)
             bid = form.cleaned_data.get("bid")
             if  bid < listing.start_bid:
                 return render(request, "auctions/listing.html", {
@@ -135,10 +136,26 @@ def listing(request, listing_id):
                     bid=bid
                 )
                 obj.save()
-                # form = BidForm()
                 return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            creator_name = request.user.username
+            body = comment_form.cleaned_data.get("body")
+            new_comment = CommentModel.objects.create(
+                creator_name=creator_name,
+                listing=listing,
+                body=body
+            )
+            new_comment.save()
+            # # Create comment object but don't save to db yet
+            # new_comment = comment_form.save(commit=False)
+            # # Assign the current listing to the comment
+            # new_comment.listing = listing
+            # # Save the comment to the db
+            # new_comment.save()
 
-    listing = ListingModel.objects.get(pk=listing_id)
+    # listing = ListingModel.objects.get(pk=listing_id)
+    comments = listing.comments.filter(active=True)
 
     if BidModel.objects.filter(listing__id=listing_id):
         num_of_bids = BidModel.objects.filter(listing__id=listing_id).count()
@@ -152,6 +169,7 @@ def listing(request, listing_id):
         curr_bid = ListingModel.objects.get(pk=listing_id).start_bid
 
     form = BidForm()
+    comment_form = CommentForm()
 
     if listing in request.user.watchlist.all():
         on_watchlist = True
@@ -168,7 +186,9 @@ def listing(request, listing_id):
             "num_of_bids": num_of_bids,
             "bidder": bidder,
             "on_watchlist": on_watchlist,
-            "num_on_watchlist": num_on_watchlist
+            "num_on_watchlist": num_on_watchlist,
+            "comment_form": comment_form,
+            "comments": comments
         })
     else:
         return render(request, "auctions/listing.html", {
@@ -177,7 +197,9 @@ def listing(request, listing_id):
             "curr_bid": curr_bid,
             "num_of_bids": num_of_bids,
             "on_watchlist": on_watchlist,
-            "num_on_watchlist": num_on_watchlist
+            "num_on_watchlist": num_on_watchlist,
+            "comment_form": comment_form,
+            "comments": comments
         })
 
 
