@@ -85,20 +85,24 @@ def create(request):
             description = form.cleaned_data.get("description")
             img = form.cleaned_data.get("img")
             start_bid = form.cleaned_data.get("start_bid")
+            category_id = int(request.POST["category"])
+            category = CategoryModel.objects.get(pk=category_id)
             if img:
                 obj = ListingModel.objects.create(
                     creator=creator,
                     title=title,
                     description=description,
                     img=img,
-                    start_bid=start_bid
+                    start_bid=start_bid,
+                    category=category
                 )
             else:
                 obj = ListingModel.objects.create(
                     creator=creator,
                     title=title,
                     description=description,
-                    start_bid=start_bid
+                    start_bid=start_bid,
+                    category=category
                 )
             obj.save()
             return HttpResponseRedirect(reverse("index"))
@@ -124,13 +128,14 @@ def listing(request, listing_id):
                     "message": "Small bid."
                 })
             else:
+                request.user.watchlist.add(listing)
                 obj = BidModel.objects.create(
                     user=user,
                     listing=listing,
                     bid=bid
                 )
                 obj.save()
-                form = BidForm()
+                # form = BidForm()
                 return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
 
     listing = ListingModel.objects.get(pk=listing_id)
@@ -145,6 +150,7 @@ def listing(request, listing_id):
         curr_bid = BidModel.objects.filter(listing__id=listing_id).last()
     else:
         curr_bid = ListingModel.objects.get(pk=listing_id).start_bid
+
     form = BidForm()
 
     if listing in request.user.watchlist.all():
@@ -210,9 +216,15 @@ def close(request, listing_id):
     
 def categories(request):
     categories = CategoryModel.objects.all()
+    if request.user.is_authenticated:
+        num_on_watchlist = request.user.watchlist.count()
+        return render(request, "auctions/categories.html", {
+                "categories": categories,
+                "num_on_watchlist": num_on_watchlist
+            })
     return render(request, "auctions/categories.html", {
-            "categories": categories
-        })
+                "categories": categories
+            })
     
 def category(request, category_name):
     listings = ListingModel.objects.filter(category__name=category_name).all()

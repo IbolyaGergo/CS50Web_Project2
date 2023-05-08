@@ -7,25 +7,27 @@
             <div>
                 <form action="{% url 'close' listing.id %}" method="post">
                     {% csrf_token %}
-                    <input type="submit" value="Close">
+                    <input type="submit" value="Close the auction">
                 </form>
             </div>
         {% endif %}
         {% if not listing.active and user.id == listing.winner %}
-            You won the item.
+            <div class="alert alert-success" role="alert">
+                Congratulations! You won the auction!
+            </div>
         {% endif %}
         {% if on_watchlist %}
             <div>
                 <form action="{% url 'unwatch' listing.id %}" method="post">
                     {% csrf_token %}
-                    <input type="submit" value="Remove">
+                    <input type="submit" value="Remove from Watchlist">
                 </form>
             </div>
         {% else %}
             <div>
                 <form action="{% url 'watch' listing.id %}" method="post">
                     {% csrf_token %}
-                    <input type="submit" value="Watchlist">
+                    <input type="submit" value="Add to Watchlist">
                 </form>
             </div>
         {% endif %}
@@ -34,6 +36,8 @@
         <img src="{{ listing.img.url }}" alt="{{ listing.title }}" class="card-img" style="height: 300px; object-fit: scale-down;">
     {% endif %}
     <p>{{ listing.description }}</p>
+    <p>Category: <a href="{% url 'category' listing.category %}">{{ listing.category }}</a></p>
+    <p>Created by: {{ listing.creator }}</p>
     <h2>{{ curr_bid }}</h2>
     {% if user.is_authenticated %}
         <div>

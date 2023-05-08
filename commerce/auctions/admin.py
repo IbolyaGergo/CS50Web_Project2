@@ -16,6 +16,9 @@ class ListingModelAdmin(admin.ModelAdmin):
     actions = [make_active, make_inactive]
 
 
+class CategoryModelAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name')
+
 class UserAdmin(admin.ModelAdmin):
     list_display = ('id', 'username')
 
@@ -24,4 +27,4 @@ class UserAdmin(admin.ModelAdmin):
 admin.site.register(User, UserAdmin)
 admin.site.register(ListingModel, ListingModelAdmin)
 admin.site.register(BidModel)
-admin.site.register(CategoryModel)
+admin.site.register(CategoryModel, CategoryModelAdmin)

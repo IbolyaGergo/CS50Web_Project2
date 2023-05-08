@@ -1,25 +1,29 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
-    {% for listing in listings %}
-        {% if listing.active %}
-            <div class="card mb-3">
-                <div class="row no-gutters">
-                    {% if listing.img %}
-                    <div class="col-md-4">
-                        <img src="{{ listing.img.url }}" alt="{{ listing.title }}" class="card-img" style="height: 300px; object-fit: scale-down;">
-                    </div>
-                    {% endif %}
-                    <div class="col-md-8">
-                        <div class="card-body">
-                            <h5 class="card-title"><a href="{% url 'listing' listing.id %}">{{ listing.title }}</a></h5>
-                            <p class="card-text">{{ listing.description }}</p>
-                            <p class="card-text">Created at: {{ listing.created_at|date:"F j, Y, g:i a" }}</p>
+    {% if user.is_authenticated %}
+        <h2>Active Listings</h2>
+        {% for listing in listings %}
+            {% if listing.active %}
+                <div class="card mb-3">
+                    <div class="row no-gutters">
+                        {% if listing.img %}
+                        <div class="col-md-4">
+                            <img src="{{ listing.img.url }}" alt="{{ listing.title }}" class="card-img" style="height: 300px; object-fit: scale-down;">
+                        </div>
+                        {% endif %}
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title"><a href="{% url 'listing' listing.id %}">{{ listing.title }}</a></h5>
+                                <p class="card-text">{{ listing.description }}</p>
+                                <p class="card-text">Created at: {{ listing.created_at|date:"F j, Y, g:i a" }}</p>
+                                <p class="card-text">Category: <a href="{% url 'category' listing.category %}">{{ listing.category }}</a></p>
+                                <p class="card-text">Created by: {{ listing.creator }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        {% endif %}
-    {% endfor %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
 {% endblock %}
